@@ -15,7 +15,7 @@
         <td>{{product.name}}</td>
         <td>{{product.provider}}</td>
         <td>{{product.currentVersion}}</td>
-        <td><button class="btn btn-outline-secondary">Subscribe</button></td>
+        <td><button class="btn btn-outline-secondary" @click="subscribe(product.id)">Subscribe</button></td>
       </tr>
     </tbody>
   </table>
@@ -31,6 +31,22 @@ export default {
   },
   created() {
     this.products = this.$route.meta.products;
+  },
+  methods: {
+    async subscribe(productId) {
+      const token = await this.$auth.getTokenSilently()
+      const response = await fetch(`/api/subscribe?productId=${productId}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        alert(`Subscribed to ${productId}`)
+      } else {
+        alert(`Failed to subscribe: ${response.statusCode}`);
+      }
+    }
   }
 }
 </script>
