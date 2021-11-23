@@ -6,9 +6,12 @@
       <template v-if="$auth.isAuthenticated">
         | <router-link to="/profile">Profile</router-link>
         | <router-link to="/hello">Hello</router-link>
+        | <router-link to="/products">Products</router-link>
       </template>
     </div>
-    <router-view/>
+    <div class="container">
+      <router-view/>
+    </div>
   </div>
 </template>
 

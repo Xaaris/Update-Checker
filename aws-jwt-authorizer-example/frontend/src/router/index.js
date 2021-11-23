@@ -4,7 +4,8 @@ import Home from '../views/Home.vue'
 import Profile from "@/views/Profile";
 import {authGuard} from "@/auth/authGuard";
 import Hello from "@/views/Hello";
-import {helloWorldResolverGuard} from "@/modules/resolvers";
+import Products from "@/views/Products";
+import {helloWorldResolverGuard, productsResolverGuard} from "@/modules/resolvers";
 
 Vue.use(VueRouter)
 
@@ -33,6 +34,12 @@ const routes = [
     name: "hello",
     component: Hello,
     beforeEnter: helloWorldResolverGuard
+  },
+  {
+    path: "/products",
+    name: "products",
+    component: Products,
+    beforeEnter: productsResolverGuard
   }
 ]
 

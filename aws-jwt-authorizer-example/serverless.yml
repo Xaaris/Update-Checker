@@ -9,6 +9,7 @@ provider:
   lambdaHashingVersion: 20201221
   environment:
     USER_TABLE: productCheckerUsersTable
+    PRODUCT_TABLE: productCheckerProductTable
   httpApi:
     authorizers:
       serviceAuthorizer:
@@ -26,7 +27,9 @@ provider:
             - dynamodb:PutItem
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
-          Resource: "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.USER_TABLE}"
+          Resource:
+            - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.USER_TABLE}"
+            - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.PRODUCT_TABLE}"
 functions:
   getProfileInfo:
     handler: profile.get
@@ -42,6 +45,13 @@ functions:
             method: POST
             path: /api/profile
             authorizer: serviceAuthorizer
+  listProducts:
+    handler: products.get
+    events:
+      - httpApi:
+          method: GET
+          path: /api/products
+          authorizer: serviceAuthorizer
   registerProfile:
     handler: register.post
     events:
@@ -50,12 +60,23 @@ functions:
           path: /api/register
           authorizer: serviceAuthorizer
 
-resources: # CloudFormation template syntax from here on.
+resources:
   Resources:
     usersTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:provider.environment.USER_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+    productTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.PRODUCT_TABLE}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
