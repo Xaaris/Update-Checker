@@ -1,0 +1,30 @@
+org: oliverbehncke
+app: http-api-node-auth0-simple-app
+service: http-api-node-auth0-simple
+
+provider:
+  name: aws
+  region: eu-central-1
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  httpApi:
+    authorizers:
+      serviceAuthorizer:
+        identitySource: $request.header.Authorization
+        issuerUrl: https://dev-hw-jobs-integration.eu.auth0.com/
+        audience: productchecker
+functions:
+  getProfileInfo:
+    handler: profile.get
+    events:
+      - httpApi:
+            method: GET
+            path: /api/profile
+            authorizer: serviceAuthorizer
+  createProfileInfo:
+    handler: profile.post
+    events:
+      - httpApi:
+            method: POST
+            path: /api/profile
+            authorizer: serviceAuthorizer
