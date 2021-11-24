@@ -13,9 +13,7 @@ async function subscribe(userId, productId) {
             updatedAt: timestamp,
         },
     };
-    const data = await dynamoDb.put(params).promise();
-    console.log(`Stored item: ${data}`)
-    return data;
+    await dynamoDb.put(params).promise();
 }
 
 module.exports.post = async (event, context) => {
@@ -24,6 +22,7 @@ module.exports.post = async (event, context) => {
     const userId = event.requestContext.authorizer.jwt.claims.sub;
     const querystring = event.queryStringParameters;
     const productId = querystring.productId;
+    await createUserIfNonExistent(userId, event.headers.authorization)
     if (productId) {
         console.log(`Subscribing to: ${productId}`);
         await subscribe(userId, productId);
@@ -53,7 +52,7 @@ async function unsubscribe(userId, productId) {
         },
     };
     const data = await dynamoDb.delete(params).promise();
-    console.log(`Deleted item: ${data}`)
+    console.log(`Deleted item: ${JSON.stringify(data)}`)
     return data;
 }
 
@@ -110,3 +109,62 @@ module.exports.get = async (event, context) => {
         body: JSON.stringify(subscriptions),
     };
 };
+
+async function createUserIfNonExistent(userId, authHeader) {
+    if (await userMissing(userId)) {
+        const profile = await getUserInfo(authHeader);
+        console.log('profile is: ', profile);
+        console.log('Storing user profile');
+        await storeUserProfile(profile);
+    }
+}
+
+async function userMissing(userId) {
+        const params = {
+            TableName: process.env.USER_TABLE,
+            Key:
+                {
+                    id: userId
+                },
+            AttributesToGet: [
+                'id'
+            ]
+        }
+
+        let exists = true
+        let result = await dynamoDb.get(params).promise();
+        if (result.Item !== undefined && result.Item !== null) {
+            exists = false
+        }
+
+        return (exists)
+}
+
+async function getUserInfo(authHeader) {
+    const {default: fetch} = await import('node-fetch')
+    const response = await fetch('https://dev-hw-jobs-integration.eu.auth0.com/userinfo', {
+        headers: {
+            Authorization: authHeader
+        }
+    })
+
+    if (response.ok) {
+        return response.json()
+    } else {
+        throw new Error(`Wrong statusCode: ${response.statusCode}`)
+    }
+}
+
+async function storeUserProfile(profile) {
+    const timestamp = new Date().getTime();
+    const params = {
+        TableName: process.env.USER_TABLE,
+        Item: {
+            id: profile.sub,
+            name: profile.name,
+            email: profile.email,
+            updatedAt: timestamp,
+        },
+    };
+    await dynamoDb.put(params).promise();
+}
