@@ -2,10 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Profile from "@/views/Profile";
-import {authGuard} from "@/auth/authGuard";
-import Hello from "@/views/Hello";
 import Products from "@/views/Products";
-import {helloWorldResolverGuard, productsResolverGuard} from "@/modules/resolvers";
+import {authGuard, productsResolverGuard} from "@/modules/resolvers";
 
 Vue.use(VueRouter)
 
@@ -16,24 +14,10 @@ const routes = [
     component: Home
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  },
-  {
     path: "/profile",
     name: "profile",
     component: Profile,
     beforeEnter: authGuard
-  },
-  {
-    path: "/hello",
-    name: "hello",
-    component: Hello,
-    beforeEnter: helloWorldResolverGuard
   },
   {
     path: "/products",

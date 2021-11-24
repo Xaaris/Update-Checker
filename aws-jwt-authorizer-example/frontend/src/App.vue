@@ -11,15 +11,9 @@
             <li class="nav-item">
               <router-link class="nav-link" to="/">Home</router-link>
             </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="/about">About</router-link>
-            </li>
             <template v-if="$auth.isAuthenticated">
               <li class="nav-item">
                 <router-link class="nav-link" to="/profile">Profile</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link class="nav-link" to="/hello">Hello</router-link>
               </li>
               <li class="nav-item">
                 <router-link class="nav-link" to="/products">Products</router-link>

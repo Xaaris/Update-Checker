@@ -1,13 +1,14 @@
 <template>
   <div>
     <div>
-      <img :src="$auth.user.picture">
+      <img :alt="$auth.user.name" :src="$auth.user.picture">
       <h2>{{ $auth.user.name }}</h2>
-      <p>{{ $auth.user.email }}</p>
-    </div>
-
-    <div>
-      <pre>{{ JSON.stringify($auth.user, null, 2) }}</pre>
+      <p><strong>ID:</strong> {{$auth.user.sub}}</p>
+      <p>
+        <strong>E-Mail: </strong> {{ $auth.user.email }}
+        (<span v-if="$auth.user.email_verified">verified</span>
+        <span v-else>not verified</span>)
+      </p>
     </div>
     <div class="mt-3">
         <button class="btn btn-primary" @click="register">Register</button>
