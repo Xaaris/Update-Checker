@@ -1,6 +1,4 @@
-org: oliverbehncke
-app: http-api-node-auth0-simple-app
-service: http-api-node-auth0-simple
+service: product-checker
 
 provider:
   name: aws
