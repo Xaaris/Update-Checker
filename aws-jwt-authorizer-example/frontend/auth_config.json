@@ -2,5 +2,5 @@
   "domain": "dev-hw-jobs-integration.eu.auth0.com",
   "clientId": "YjNHozi3LGARyHlyjfQKvSCCZZiUBMM0",
   "audience": "productchecker",
-  "scope": "openid profile email offline_access productchecker"
+  "scope": "openid profile email offline_access productchecker productchecker_admin"
 }

@@ -1,4 +1,5 @@
 import Vue from "vue";
+import jwt from "jsonwebtoken";
 import createAuth0Client from "@auth0/auth0-spa-js";
 
 /** Define a default action to perform after authentication */
@@ -29,7 +30,8 @@ export const useAuth = ({
                 user: {},
                 auth0Client: null,
                 popupOpen: false,
-                error: null
+                error: null,
+                scopes: []
             };
         },
         methods: {
@@ -41,6 +43,7 @@ export const useAuth = ({
                     await this.auth0Client.loginWithPopup(options, config);
                     this.user = await this.auth0Client.getUser();
                     this.isAuthenticated = await this.auth0Client.isAuthenticated();
+                    this.scopes = await this.getScopes();
                     this.error = null;
                 } catch (e) {
                     this.error = e;
@@ -52,6 +55,7 @@ export const useAuth = ({
 
                 this.user = await this.auth0Client.getUser();
                 this.isAuthenticated = true;
+                this.scopes = await this.getScopes();
             },
             /** Handles the callback when logging in using a redirect */
             async handleRedirectCallback() {
@@ -60,6 +64,7 @@ export const useAuth = ({
                     await this.auth0Client.handleRedirectCallback();
                     this.user = await this.auth0Client.getUser();
                     this.isAuthenticated = true;
+                    this.scopes = await this.getScopes();
                     this.error = null;
                 } catch (e) {
                     this.error = e;
@@ -87,6 +92,25 @@ export const useAuth = ({
             /** Logs the user out and removes their session on the authorization server */
             logout(o) {
                 return this.auth0Client.logout(o);
+            },
+            async getScopes() {
+                if (this.isAuthenticated) {
+                    const token = await this.auth0Client.getTokenSilently()
+                    const decodedToken = jwt.decode(token)
+                    return decodedToken.scope.split(' ');
+                } else {
+                    return [];
+                }
+            },
+        },
+        computed: {
+            isAdmin() {
+                if (this.user) {
+                    const scopes = new Set(this.scopes);
+                    return scopes.has('productchecker_admin');
+                } else {
+                    return false;
+                }
             }
         },
         /** Use this lifecycle method to instantiate the SDK client */
@@ -119,6 +143,7 @@ export const useAuth = ({
                 // Initialize our internal authentication state
                 this.isAuthenticated = await this.auth0Client.isAuthenticated();
                 this.user = await this.auth0Client.getUser();
+                this.scopes = await this.getScopes();
                 this.loading = false;
             }
         }

@@ -28,7 +28,7 @@
                 <button class="btn btn-outline-secondary" @click="login">Log in</button>
               </template>
               <template v-else>
-                <span class="nav-link">{{username}}
+                <span class="nav-link">{{username}} <span class="me-2" v-if="$auth.isAdmin">(admin)</span>
                   <button class="btn btn-outline-secondary" @click="logout">Log out</button>
                 </span>
               </template>

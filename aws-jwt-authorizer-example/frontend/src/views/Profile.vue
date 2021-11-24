@@ -2,7 +2,7 @@
   <div>
     <div>
       <img :alt="$auth.user.name" :src="$auth.user.picture">
-      <h2>{{ $auth.user.name }}</h2>
+      <h2>{{ $auth.user.name }} <span v-if="$auth.isAdmin">(admin)</span></h2>
       <p><strong>ID:</strong> {{$auth.user.sub}}</p>
       <p>
         <strong>E-Mail: </strong> {{ $auth.user.email }}
@@ -15,14 +15,7 @@
 
 <script>
 export default {
-  name: "Profile.vue",
-  data() {
-    return {
-      registration: undefined
-    }
-  },
-  methods: {
-  }
+  name: "Profile.vue"
 }
 </script>
 
