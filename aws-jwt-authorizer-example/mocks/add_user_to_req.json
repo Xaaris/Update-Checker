@@ -1,0 +1,11 @@
+{
+  "requestContext": {
+    "authorizer" : {
+      "jwt": {
+        "claims": {
+          "sub": "auth0|619cc4d3c1db87006b5ea17c"
+        }
+      }
+    }
+  }
+}

@@ -34,21 +34,21 @@ provider:
 functions:
   # Profile
   getProfileInfo:
-    handler: profile.get
+    handler: functions/profile.get
     events:
       - httpApi:
             method: GET
             path: /api/profile
             authorizer: serviceAuthorizer
   createProfileInfo:
-    handler: profile.post
+    handler: functions/profile.post
     events:
       - httpApi:
             method: POST
             path: /api/profile
             authorizer: serviceAuthorizer
   registerProfile:
-    handler: register.post
+    handler: functions/register.post
     events:
       - httpApi:
           method: POST
@@ -56,7 +56,7 @@ functions:
           authorizer: serviceAuthorizer
   # Products
   listProducts:
-    handler: products.get
+    handler: functions/products.get
     events:
       - httpApi:
           method: GET
@@ -64,21 +64,21 @@ functions:
           authorizer: serviceAuthorizer
   # Subscriptions
   subscribe:
-    handler: subscriptions.post
+    handler: functions/subscriptions.post
     events:
       - httpApi:
           method: POST
           path: /api/subscribe
           authorizer: serviceAuthorizer
   unsubscribe:
-    handler: subscriptions.delete
+    handler: functions/subscriptions.delete
     events:
       - httpApi:
           method: DELETE
           path: /api/unsubscribe
           authorizer: serviceAuthorizer
   listSubscribtions:
-    handler: subscriptions.get
+    handler: functions/subscriptions.get
     events:
       - httpApi:
           method: GET
