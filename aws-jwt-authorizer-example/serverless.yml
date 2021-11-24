@@ -56,11 +56,18 @@ functions:
           authorizer: serviceAuthorizer
   # Products
   listProducts:
-    handler: functions/products.get
+    handler: functions/products.getAll
     events:
       - httpApi:
           method: GET
           path: /api/products
+          authorizer: serviceAuthorizer
+  getProduct:
+    handler: functions/products.get
+    events:
+      - httpApi:
+          method: GET
+          path: /api/products/{id}
           authorizer: serviceAuthorizer
   # Subscriptions
   subscribe:
@@ -78,7 +85,7 @@ functions:
           path: /api/unsubscribe
           authorizer: serviceAuthorizer
   listSubscribtions:
-    handler: functions/subscriptions.get
+    handler: functions/subscriptions.getAllForUser
     events:
       - httpApi:
           method: GET

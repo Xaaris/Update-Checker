@@ -17,16 +17,48 @@ async function listAll() {
     return products;
 }
 
+module.exports.getAll = async (event, context) => {
+    console.log(context);
+    console.log(event);
+
+    const products = await listAll();
+
+    console.log(`Products: ${products}`);
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify(products),
+    };
+};
+
+async function getProduct(productId) {
+    const params = {
+        TableName: process.env.PRODUCT_TABLE,
+        Key:
+            {id: productId}
+    }
+    return dynamoDb.get(params).promise();
+}
+
 module.exports.get = async (event, context) => {
-  console.log(context);
-  console.log(event);
+    console.log(context);
+    console.log(event);
 
-  const products = await listAll();
+    let productId = event.pathParameters.id
 
-  console.log(`Products: ${products}`);
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify(products),
-  };
+    if (productId) {
+        console.log(`Getting product with id: ${productId}`);
+        const product = await getProduct(productId);
+        return {
+            statusCode: 200,
+            body: JSON.stringify(product),
+        };
+    } else {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({
+                message: 'Missing productId parameter'
+            }),
+        };
+    }
 };

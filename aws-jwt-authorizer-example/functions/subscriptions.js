@@ -95,7 +95,7 @@ async function listAllForUser(userId) {
     return data.Items
 }
 
-module.exports.get = async (event, context) => {
+module.exports.getAllForUser = async (event, context) => {
     console.log(context);
     console.log(event);
 
