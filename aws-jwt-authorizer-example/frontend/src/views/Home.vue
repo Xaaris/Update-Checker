@@ -1,16 +1,12 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-
     <!-- Check that the SDK client is not currently loading before accessing is methods -->
-    <div v-if="!$auth.loading">
-      <!-- show login when not authenticated -->
-      <button v-if="!$auth.isAuthenticated" @click="login">Log in</button>
-      <!-- show logout when authenticated -->
-      <button v-if="$auth.isAuthenticated" @click="logout">Log out</button>
-    </div>
-    <div v-else-if="$auth.loading">
+    <div v-if="$auth.loading">
       Loading ...
+    </div>
+    <div v-else>
+      <h1>Product Checker</h1>
+      <p>A tool that keeps you informed about your favorite products</p>
     </div>
   </div>
 </template>
