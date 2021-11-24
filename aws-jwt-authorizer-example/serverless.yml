@@ -30,7 +30,9 @@ provider:
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.USER_TABLE}"
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.PRODUCT_TABLE}"
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.SUBSCRIPTION_TABLE}"
+            - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.SUBSCRIPTION_TABLE}/index/*"
 functions:
+  # Profile
   getProfileInfo:
     handler: profile.get
     events:
@@ -45,6 +47,14 @@ functions:
             method: POST
             path: /api/profile
             authorizer: serviceAuthorizer
+  registerProfile:
+    handler: register.post
+    events:
+      - httpApi:
+          method: POST
+          path: /api/register
+          authorizer: serviceAuthorizer
+  # Products
   listProducts:
     handler: products.get
     events:
@@ -52,6 +62,7 @@ functions:
           method: GET
           path: /api/products
           authorizer: serviceAuthorizer
+  # Subscriptions
   subscribe:
     handler: subscriptions.post
     events:
@@ -59,12 +70,19 @@ functions:
           method: POST
           path: /api/subscribe
           authorizer: serviceAuthorizer
-  registerProfile:
-    handler: register.post
+  unsubscribe:
+    handler: subscriptions.delete
     events:
       - httpApi:
-          method: POST
-          path: /api/register
+          method: DELETE
+          path: /api/unsubscribe
+          authorizer: serviceAuthorizer
+  listSubscribtions:
+    handler: subscriptions.get
+    events:
+      - httpApi:
+          method: GET
+          path: /api/subscriptions
           authorizer: serviceAuthorizer
 
 resources:
@@ -105,4 +123,13 @@ resources:
             KeyType: HASH
           - AttributeName: userId
             KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: UserIdIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: productId
+                KeyType: RANGE
+            Projection:
+              ProjectionType: 'ALL'
         BillingMode: PAY_PER_REQUEST

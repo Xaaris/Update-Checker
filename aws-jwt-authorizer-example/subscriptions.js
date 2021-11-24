@@ -43,3 +43,70 @@ module.exports.post = async (event, context) => {
     }
 
 };
+
+async function unsubscribe(userId, productId) {
+    const params = {
+        TableName: process.env.SUBSCRIPTION_TABLE,
+        Key: {
+            userId: userId,
+            productId: productId,
+        },
+    };
+    const data = await dynamoDb.delete(params).promise();
+    console.log(`Deleted item: ${data}`)
+    return data;
+}
+
+module.exports.delete = async (event, context) => {
+    console.log(context);
+    console.log(event);
+    const userId = event.requestContext.authorizer.jwt.claims.sub;
+    const querystring = event.queryStringParameters;
+    const productId = querystring.productId;
+    if (productId) {
+        console.log(`Unsubscribing to: ${productId}`);
+        await unsubscribe(userId, productId);
+        return {
+            statusCode: 200,
+            body: JSON.stringify({
+                message: `Deleted subscription to ${productId}`
+            }),
+        };
+    } else {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({
+                message: 'Missing productId parameter'
+            }),
+        };
+    }
+};
+
+async function listAllForUser(userId) {
+    const params = {
+        TableName : process.env.SUBSCRIPTION_TABLE,
+        KeyConditionExpression: 'userId = :userId',
+        IndexName: 'UserIdIndex',
+        ExpressionAttributeValues: {
+            ':userId': userId
+        },
+        ProjectionExpression: ['productId']
+    };
+    let data = await dynamoDb.query(params).promise();
+    return data.Items
+}
+
+module.exports.get = async (event, context) => {
+    console.log(context);
+    console.log(event);
+
+    const userId = event.requestContext.authorizer.jwt.claims.sub;
+    const subscriptions = await listAllForUser(userId);
+
+    console.log(`Subscriptions for user ${userId}: ${subscriptions.toString()}`);
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify(subscriptions),
+    };
+};
