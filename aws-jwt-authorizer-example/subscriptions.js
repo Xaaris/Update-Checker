@@ -103,7 +103,7 @@ module.exports.get = async (event, context) => {
     const userId = event.requestContext.authorizer.jwt.claims.sub;
     const subscriptions = await listAllForUser(userId);
 
-    console.log(`Subscriptions for user ${userId}: ${subscriptions.toString()}`);
+    console.log(`Subscriptions for user ${userId}: ${JSON.stringify(subscriptions)}`);
 
     return {
         statusCode: 200,
