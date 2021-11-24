@@ -35,7 +35,7 @@ export default {
   methods: {
     async subscribe(productId) {
       const token = await this.$auth.getTokenSilently()
-      const response = await fetch(`/api/subscribe?productId=${productId}`, {
+      const response = await fetch('/api/subscribe?' + new URLSearchParams({productId: productId}), {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`

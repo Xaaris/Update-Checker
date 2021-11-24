@@ -56,7 +56,7 @@ export async function productsResolverGuard(to, from, next) {
                 to.meta.products = await response.json();
                 return next();
             } else {
-                alert(`Failed to retrieve message: ${response.statusCode}`);
+                alert(`Failed to retrieve products: ${response.statusCode}`);
                 return next('/');
             }
 
