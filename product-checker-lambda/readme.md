@@ -16,6 +16,12 @@ In case of an available update, the user is notified via email.
 sls deploy
 ```
 
+Before you deploy make sure the frontend is built:
+```
+cd frontend
+npm run build
+```
+
 #### Invoke
 Invoke a specific lambda function
 ```

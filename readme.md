@@ -3,7 +3,7 @@
 Following sub-projects:
 
 * product-checker-spring-vue: sample app for vue frontend with auth0 authentication and spring resource server
-* aws-jwt-authorizer-example: actual lambda based product checker implementation with
+* product-checker-lambda: actual lambda based product checker implementation with
   * vue frontend
   * auth0/oauth2 authentication (frontend and backend)
   * http api implemented with nodejs lambdas
