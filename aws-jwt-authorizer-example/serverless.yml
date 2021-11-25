@@ -5,6 +5,7 @@ custom:
   s3Sync:
     - bucketName: ${self:custom.bucketName}
       localDir: frontend/dist
+      acl: public-read
 
 provider:
   name: aws
