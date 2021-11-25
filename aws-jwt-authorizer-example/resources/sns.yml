@@ -3,4 +3,4 @@ Resources:
     Type: AWS::SNS::Topic
     Properties:
       DisplayName: 'Product update topic'
-      TopicName: product-update-topic
+      TopicName: ${self:provider.environment.PRODUCT_UPDATE_TOPIC}

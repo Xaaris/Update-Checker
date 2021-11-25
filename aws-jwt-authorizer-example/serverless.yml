@@ -12,9 +12,11 @@ provider:
   runtime: nodejs12.x
   lambdaHashingVersion: 20201221
   environment:
+    AWS_DEPLOY_REGION: ${self:provider.region}
     USER_TABLE: productCheckerUsersTable
     PRODUCT_TABLE: productCheckerProductTable
     SUBSCRIPTION_TABLE: productCheckerSubscriptionTable
+    PRODUCT_UPDATE_TOPIC: productUpdateTopic
   httpApi:
     authorizers:
       serviceAuthorizer:
@@ -38,6 +40,11 @@ provider:
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.PRODUCT_TABLE}/index/*"
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.SUBSCRIPTION_TABLE}"
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.SUBSCRIPTION_TABLE}/index/*"
+        - Effect: Allow
+          Action:
+            - SNS:Publish
+          Resource:
+            - { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.PRODUCT_UPDATE_TOPIC}" ] ] }
 
 package:
   patterns:
@@ -111,6 +118,8 @@ functions:
     handler: functions/providerIKEA.refresh
     events:
       - schedule: rate(1 day)
+    environment:
+      SNS_TOPIC_ARN: { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.PRODUCT_UPDATE_TOPIC}" ] ] }
 
 resources:
   - ${file(resources/dynamo-db.yml)}
