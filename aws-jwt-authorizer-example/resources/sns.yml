@@ -1,0 +1,6 @@
+Resources:
+  ProductUpdateTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: 'Product update topic'
+      TopicName: product-update-topic
