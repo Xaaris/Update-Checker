@@ -29,6 +29,7 @@ provider:
           Resource:
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.USER_TABLE}"
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.PRODUCT_TABLE}"
+            - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.PRODUCT_TABLE}/index/*"
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.SUBSCRIPTION_TABLE}"
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.SUBSCRIPTION_TABLE}/index/*"
 
@@ -67,13 +68,6 @@ functions:
           method: GET
           path: /api/products
           authorizer: serviceAuthorizer
-  getProduct:
-    handler: functions/products.get
-    events:
-      - httpApi:
-          method: GET
-          path: /api/products/{id}
-          authorizer: serviceAuthorizer
   # Subscriptions
   subscribe:
     handler: functions/subscriptions.post
@@ -103,6 +97,11 @@ functions:
           method: GET
           path: /api/users
           authorizer: serviceAuthorizer
+  # Provider functions
+  refreshIkea:
+    handler: functions/providerIKEA.refresh
+    events:
+      - schedule: rate(1 day)
 
 resources:
   Resources:
@@ -124,9 +123,18 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
+          - AttributeName: provider
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: providerIndex
+            KeySchema:
+              - AttributeName: provider
+                KeyType: HASH
+            Projection:
+              ProjectionType: 'ALL'
         BillingMode: PAY_PER_REQUEST
     subscriptionTable:
       Type: AWS::DynamoDB::Table

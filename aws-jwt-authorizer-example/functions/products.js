@@ -3,6 +3,8 @@
 const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
+const PRODUCTS_TABLE = process.env.PRODUCT_TABLE;
+
 async function listAll() {
     const products = [];
     let items;
@@ -31,34 +33,37 @@ module.exports.getAll = async (event, context) => {
     };
 };
 
-async function getProduct(productId) {
+module.exports.getProduct = async (productId) => {
     const params = {
-        TableName: process.env.PRODUCT_TABLE,
-        Key:
-            {id: productId}
+        TableName: PRODUCTS_TABLE,
+        Key: {id: productId}
     }
     return dynamoDb.get(params).promise();
 }
 
-module.exports.get = async (event, context) => {
-    console.log(context);
-    console.log(event);
-
-    let productId = event.pathParameters.id
-
-    if (productId) {
-        console.log(`Getting product with id: ${productId}`);
-        const product = await getProduct(productId);
-        return {
-            statusCode: 200,
-            body: JSON.stringify(product),
-        };
-    } else {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({
-                message: 'Missing productId parameter'
-            }),
-        };
+module.exports.getProductsByProvider = async (provider) => {
+    const params = {
+        TableName: PRODUCTS_TABLE,
+        IndexName: 'providerIndex',
+        KeyConditionExpression: 'provider = :provider',
+        ExpressionAttributeValues: {':provider': provider}
     }
-};
+    const result = await dynamoDb.query(params).promise();
+    return result.Items
+}
+
+module.exports.updateProduct = async (product) => {
+    const params = {
+        TableName: PRODUCTS_TABLE,
+        Key: {id: product.id},
+        UpdateExpression: `set majorVersion = :majorVersion, minorVersion = :minorVersion, bugfixVersion = :bugfixVersion, releaseNotesLink = :releaseNotesLink`,
+        ExpressionAttributeValues: {
+            ":majorVersion": product.majorVersion,
+            ":minorVersion": product.minorVersion,
+            ":bugfixVersion": product.bugfixVersion,
+            ":releaseNotesLink": product.releaseNotesLink,
+        }
+    }
+    return dynamoDb.update(params)
+        .promise();
+}
