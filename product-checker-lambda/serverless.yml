@@ -57,28 +57,6 @@ plugins:
   - serverless-s3-sync
 
 functions:
-  # Profile
-  getProfileInfo:
-    handler: functions/profile.get
-    events:
-      - httpApi:
-            method: GET
-            path: /api/profile
-            authorizer: serviceAuthorizer
-  createProfileInfo:
-    handler: functions/profile.post
-    events:
-      - httpApi:
-            method: POST
-            path: /api/profile
-            authorizer: serviceAuthorizer
-  registerProfile:
-    handler: functions/register.post
-    events:
-      - httpApi:
-          method: POST
-          path: /api/register
-          authorizer: serviceAuthorizer
   # Products
   listProducts:
     handler: functions/products.getAll
