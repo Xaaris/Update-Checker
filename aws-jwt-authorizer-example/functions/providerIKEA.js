@@ -1,9 +1,10 @@
 'use strict';
 
+const AWS = require('aws-sdk');
 const {getProductsByProvider, updateProduct} = require("./products")
 
 const AWS_DEPLOY_REGION = process.env.AWS_DEPLOY_REGION
-const SNS_TOPIC_ARN = process.env.SNS_TOPIC_ARN
+const SNS_TOPIC_ARN = process.env.SNS_PRODUCT_UPDATE_TOPIC_ARN
 const SNS = new AWS.SNS({region: AWS_DEPLOY_REGION})
 
 module.exports.refresh = async (event, context) => {
@@ -14,12 +15,20 @@ module.exports.refresh = async (event, context) => {
     console.log(latestVersion)
     if (isNewVersion(localProduct, latestVersion)) {
         latestVersion.id = localProduct.id
-        latestVersion.currentVersion = `${latestVersion.majorVersion}.${latestVersion.minorVersion}.${latestVersion.bugfixVersion}`
+        latestVersion.currentVersion = buildFullVersion(latestVersion)
         await updateProduct(latestVersion)
-        console.log("Updated product, should now notify user")
-        await publishMessage(latestVersion.id)
+        const message = {}
+        message.productId = latestVersion.id
+        message.name = localProduct.name
+        message.oldVersion = buildFullVersion(localProduct)
+        message.newVersion = buildFullVersion(latestVersion)
+        message.releaseNotesLink = latestVersion.releaseNotesLink
+        await publishMessage(message)
     }
+}
 
+function buildFullVersion(product) {
+    return `${product.majorVersion}.${product.minorVersion}.${product.bugfixVersion}`
 }
 
 function isNewVersion(localProduct, latestVersion) {
@@ -49,10 +58,9 @@ async function getLatestIkeaTradfriGatewayVersion() {
     }
 }
 
-async function publishMessage(productId) {
-    console.log(`arguments sns arn:${SNS_TOPIC_ARN}, region: ${AWS_DEPLOY_REGION}`)
+async function publishMessage(message) {
     const params = {
-        Message: JSON.stringify(productId),
+        Message: JSON.stringify(message),
         TopicArn: SNS_TOPIC_ARN
     }
     console.log(`publishing event ${JSON.stringify(params)}`)

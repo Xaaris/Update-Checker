@@ -18,6 +18,7 @@ provider:
     PRODUCT_TABLE: productCheckerProductTable
     SUBSCRIPTION_TABLE: productCheckerSubscriptionTable
     PRODUCT_UPDATE_TOPIC: productUpdateTopic
+    USER_NOTIFICATION_TOPIC: userNotificationTopic
   httpApi:
     authorizers:
       serviceAuthorizer:
@@ -46,6 +47,7 @@ provider:
             - SNS:Publish
           Resource:
             - { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.PRODUCT_UPDATE_TOPIC}" ] ] }
+            - { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.USER_NOTIFICATION_TOPIC}" ] ] }
 
 package:
   patterns:
@@ -120,7 +122,15 @@ functions:
     events:
       - schedule: rate(1 day)
     environment:
-      SNS_TOPIC_ARN: { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.PRODUCT_UPDATE_TOPIC}" ] ] }
+      SNS_PRODUCT_UPDATE_TOPIC_ARN: { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.PRODUCT_UPDATE_TOPIC}" ] ] }
+  sendUserNotifications:
+    handler: functions/notifications.sendUserNotifications
+    events:
+      - sns:
+          arn:  { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.PRODUCT_UPDATE_TOPIC}" ] ] }
+          topicName: ${self:provider.environment.PRODUCT_UPDATE_TOPIC}
+    environment:
+      SNS_USER_NOTIFICATION_TOPIC_ARN: { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.USER_NOTIFICATION_TOPIC}" ] ] }
 
 resources:
   - ${file(resources/dynamo-db.yml)}

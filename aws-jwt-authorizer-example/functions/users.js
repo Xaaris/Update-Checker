@@ -54,3 +54,12 @@ module.exports.get = async (event, context) => {
         body: JSON.stringify(users),
     };
 };
+module.exports.getUser = async (userId) => {
+    const params = {
+        TableName: process.env.USER_TABLE,
+        Key: { id: userId }
+    }
+
+    const users = await dynamoDb.get(params).promise();
+    return users.Items
+}

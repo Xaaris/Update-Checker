@@ -4,3 +4,8 @@ Resources:
     Properties:
       DisplayName: 'Product update topic'
       TopicName: ${self:provider.environment.PRODUCT_UPDATE_TOPIC}
+  UserNotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: 'User notification topic'
+      TopicName: ${self:provider.environment.USER_NOTIFICATION_TOPIC}

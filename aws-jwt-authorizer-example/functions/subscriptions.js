@@ -3,10 +3,12 @@
 const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
+const SUBSCRIPTION_TABLE = process.env.SUBSCRIPTION_TABLE;
+
 async function subscribe(userId, productId) {
     const timestamp = new Date().getTime();
     const params = {
-        TableName: process.env.SUBSCRIPTION_TABLE,
+        TableName: SUBSCRIPTION_TABLE,
         Item: {
             userId: userId,
             productId: productId,
@@ -45,7 +47,7 @@ module.exports.post = async (event, context) => {
 
 async function unsubscribe(userId, productId) {
     const params = {
-        TableName: process.env.SUBSCRIPTION_TABLE,
+        TableName: SUBSCRIPTION_TABLE,
         Key: {
             userId: userId,
             productId: productId,
@@ -81,9 +83,22 @@ module.exports.delete = async (event, context) => {
     }
 };
 
+module.exports.getSubscribedUsersForProduct = async (productId) => {
+    const params = {
+        TableName : SUBSCRIPTION_TABLE,
+        KeyConditionExpression: 'productId = :productId',
+        ExpressionAttributeValues: {
+            ':productId': productId
+        },
+        ProjectionExpression: ['userId']
+    };
+    let data = await dynamoDb.query(params).promise();
+    return data.Items
+}
+
 async function listAllForUser(userId) {
     const params = {
-        TableName : process.env.SUBSCRIPTION_TABLE,
+        TableName : SUBSCRIPTION_TABLE,
         KeyConditionExpression: 'userId = :userId',
         IndexName: 'UserIdIndex',
         ExpressionAttributeValues: {
