@@ -10,6 +10,7 @@ module.exports.refresh = async (event, context) => {
     console.log(latestVersion)
     if (isNewVersion(localProduct, latestVersion)) {
         latestVersion.id = localProduct.id
+        latestVersion.currentVersion = `${latestVersion.majorVersion}.${latestVersion.minorVersion}.${latestVersion.bugfixVersion}`
         await updateProduct(latestVersion)
         console.log("Updated product, should now notify user")
     //    notify user

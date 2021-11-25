@@ -56,11 +56,16 @@ module.exports.updateProduct = async (product) => {
     const params = {
         TableName: PRODUCTS_TABLE,
         Key: {id: product.id},
-        UpdateExpression: `set majorVersion = :majorVersion, minorVersion = :minorVersion, bugfixVersion = :bugfixVersion, releaseNotesLink = :releaseNotesLink`,
+        UpdateExpression: `set majorVersion = :majorVersion, 
+        minorVersion = :minorVersion, 
+        bugfixVersion = :bugfixVersion, 
+        currentVersion = :currentVersion, 
+        releaseNotesLink = :releaseNotesLink`,
         ExpressionAttributeValues: {
             ":majorVersion": product.majorVersion,
             ":minorVersion": product.minorVersion,
             ":bugfixVersion": product.bugfixVersion,
+            ":currentVersion": product.currentVersion,
             ":releaseNotesLink": product.releaseNotesLink,
         }
     }
