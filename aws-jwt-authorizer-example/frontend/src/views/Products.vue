@@ -48,7 +48,7 @@ export default {
       if (response.ok) {
         alert(`Subscribed to ${productId}`)
       } else {
-        alert(`Failed to subscribe: ${response.statusCode}`);
+        alert(`Failed to subscribe: ${response.status}`);
       }
       await this.getSubscriptions()
     },
@@ -64,7 +64,7 @@ export default {
       if (response.ok) {
         alert(`Unsubscribed from ${productId}`);
       } else {
-        alert(`Failed to unsubscribe: ${response.statusCode}`);
+        alert(`Failed to unsubscribe: ${response.status}`);
       }
       await this.getSubscriptions()
     },
@@ -89,7 +89,7 @@ export default {
           return product;
         })
       } else {
-        alert(`Failed to retrieve your subscriptions: ${response.statusCode}`);
+        alert(`Failed to retrieve your subscriptions: ${response.status}`);
       }
     }
   }

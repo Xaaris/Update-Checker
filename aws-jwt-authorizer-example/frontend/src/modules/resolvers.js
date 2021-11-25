@@ -1,31 +1,60 @@
 import {getInstance} from "@/auth";
 
+async function getWithToken(url) {
+    const authService = getInstance();
+    const token = await authService.getTokenSilently()
+    const response = await fetch(url, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+    if (response.ok) {
+        return response.json();
+    } else {
+        throw new Error(`Failed to retrieve data: ${response.status}`)
+    }
+}
 
 export async function productsResolverGuard(to, from, next) {
     return afterLoading(async () => {
         const authService = getInstance();
         // If the user is authenticated, continue with the route
         if (authService.isAuthenticated) {
-            const token = await authService.getTokenSilently()
-            const response = await fetch('/api/products', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            if (response.ok) {
-                to.meta.products = await response.json();
+            try {
+                to.meta.products = await getWithToken('/api/products');
                 return next();
-            } else {
-                alert(`Failed to retrieve products: ${response.statusCode}`);
+            } catch (e) {
+                alert(e.message);
                 return next('/');
             }
-
         }
 
         // Otherwise, log in
         authService.loginWithRedirect({appState: {targetUrl: to.fullPath}});
     });
 }
+
+export const usersResolverGuard = (to, from, next) => {
+    return afterLoading(async () => {
+        const authService = getInstance();
+
+        // If the user is authenticated, continue with the route
+        if (!authService.isAuthenticated) {
+            authService.loginWithRedirect({appState: {targetUrl: to.fullPath}});
+        // } else if (!authService.isAdmin) {
+        //     alert(`You have to be admin to view this page`);
+        //     return next('/');
+        } else {
+            try {
+                to.meta.users = await getWithToken('/api/users');
+                return next();
+            } catch (e) {
+                alert(e.message);
+                return next('/');
+            }
+        }
+    })
+};
 
 export const authGuard = (to, from, next) => {
     return afterLoading(() => {

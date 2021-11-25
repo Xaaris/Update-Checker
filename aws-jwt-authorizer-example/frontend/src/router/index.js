@@ -3,7 +3,8 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Profile from "@/views/Profile";
 import Products from "@/views/Products";
-import {authGuard, productsResolverGuard} from "@/modules/resolvers";
+import {authGuard, productsResolverGuard, usersResolverGuard} from "@/modules/resolvers";
+import Users from "@/views/Users";
 
 Vue.use(VueRouter)
 
@@ -24,7 +25,13 @@ const routes = [
     name: "products",
     component: Products,
     beforeEnter: productsResolverGuard
-  }
+  },
+  {
+    path: "/users",
+    name: "users",
+    component: Users,
+    beforeEnter: usersResolverGuard
+  },
 ]
 
 const router = new VueRouter({

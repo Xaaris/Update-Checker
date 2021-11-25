@@ -31,6 +31,11 @@ provider:
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.PRODUCT_TABLE}"
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.SUBSCRIPTION_TABLE}"
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.SUBSCRIPTION_TABLE}/index/*"
+
+package:
+  patterns:
+    - '!frontend/**'
+
 functions:
   # Profile
   getProfileInfo:
@@ -90,6 +95,13 @@ functions:
       - httpApi:
           method: GET
           path: /api/subscriptions
+          authorizer: serviceAuthorizer
+  listUsers:
+    handler: functions/users.get
+    events:
+      - httpApi:
+          method: GET
+          path: /api/users
           authorizer: serviceAuthorizer
 
 resources:
