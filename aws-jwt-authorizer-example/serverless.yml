@@ -1,5 +1,11 @@
 service: product-checker
 
+custom:
+  bucketName: hw-jobs-integration-product-checker
+  s3Sync:
+    - bucketName: ${self:custom.bucketName}
+      localDir: frontend/dist
+
 provider:
   name: aws
   region: eu-central-1
@@ -36,6 +42,9 @@ provider:
 package:
   patterns:
     - '!frontend/**'
+
+plugins:
+  - serverless-s3-sync
 
 functions:
   # Profile
@@ -106,3 +115,4 @@ functions:
 resources:
   - ${file(resources/dynamo-db.yml)}
   - ${file(resources/sns.yml)}
+  - ${file(resources/s3.yml)}
