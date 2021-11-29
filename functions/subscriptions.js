@@ -157,7 +157,7 @@ async function userMissing(userId) {
 
 async function getUserInfo(authHeader) {
     const {default: fetch} = await import('node-fetch')
-    const response = await fetch('https://dev-hw-jobs-integration.eu.auth0.com/userinfo', {
+    const response = await fetch('https://update-checker.eu.auth0.com/userinfo', {
         headers: {
             Authorization: authHeader
         }

@@ -1,0 +1,6 @@
+{
+  "domain": "https://update-checker.eu.auth0.com",
+  "clientId": "2j8jn2Urs4V1LiPjEINuSGl32pXlZK8I",
+  "audience": "update-checker",
+  "scope": "openid profile email offline_access update-checker update-checker-admin"
+}

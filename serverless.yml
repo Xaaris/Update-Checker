@@ -1,7 +1,7 @@
-service: product-checker
+service: update-checker
 
 custom:
-  bucketName: hw-jobs-integration-product-checker
+  bucketName: update-checker-bucket
   s3Sync:
     - bucketName: ${self:custom.bucketName}
       localDir: frontend/dist
@@ -14,17 +14,17 @@ provider:
   lambdaHashingVersion: 20201221
   environment:
     AWS_DEPLOY_REGION: ${self:provider.region}
-    USER_TABLE: productCheckerUsersTable
-    PRODUCT_TABLE: productCheckerProductTable
-    SUBSCRIPTION_TABLE: productCheckerSubscriptionTable
+    USER_TABLE: updateCheckerUsers
+    PRODUCT_TABLE: updateCheckerProducts
+    SUBSCRIPTION_TABLE: updateCheckerSubscriptions
     PRODUCT_UPDATE_TOPIC: productUpdateTopic
     USER_NOTIFICATION_TOPIC: userNotificationTopic
   httpApi:
     authorizers:
       serviceAuthorizer:
         identitySource: $request.header.Authorization
-        issuerUrl: https://dev-hw-jobs-integration.eu.auth0.com/
-        audience: productchecker
+        issuerUrl: https://update-checker.eu.auth0.com/
+        audience: update-checker
   iam:
     role:
       statements:

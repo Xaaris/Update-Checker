@@ -107,7 +107,7 @@ export const useAuth = ({
             isAdmin() {
                 if (this.user) {
                     const scopes = new Set(this.scopes);
-                    return scopes.has('productchecker_admin');
+                    return scopes.has('update-checker-admin');
                 } else {
                     return false;
                 }
