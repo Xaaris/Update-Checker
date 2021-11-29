@@ -1,3 +1,5 @@
+org: xaaris
+app: update-checker
 service: update-checker
 
 custom:
