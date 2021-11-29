@@ -29,7 +29,7 @@ function getScopes(event) {
 
 function isAdmin(event) {
     const scopes = getScopes(event)
-    return scopes.has('productchecker_admin')
+    return scopes.has('update-checker-admin')
 }
 
 module.exports.get = async (event, context) => {
