@@ -50,6 +50,13 @@ provider:
           Resource:
             - { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.PRODUCT_UPDATE_TOPIC}" ] ] }
             - { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.USER_NOTIFICATION_TOPIC}" ] ] }
+        - Effect: Allow
+          Action:
+            - SES:SendEmail
+            - SES:SendRawEmail
+          Resource:
+            - { "Fn::Join": [ ":", [ "arn:aws:ses:${aws:region}", { "Ref": "AWS::AccountId" }, "*" ] ] }
+
 
 package:
   patterns:
@@ -103,14 +110,21 @@ functions:
       - schedule: rate(1 day)
     environment:
       SNS_PRODUCT_UPDATE_TOPIC_ARN: { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.PRODUCT_UPDATE_TOPIC}" ] ] }
+  # Notifications and emails
   sendUserNotifications:
     handler: functions/notifications.sendUserNotifications
     events:
       - sns:
-          arn:  { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.PRODUCT_UPDATE_TOPIC}" ] ] }
+          arn: { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.PRODUCT_UPDATE_TOPIC}" ] ] }
           topicName: ${self:provider.environment.PRODUCT_UPDATE_TOPIC}
     environment:
       SNS_USER_NOTIFICATION_TOPIC_ARN: { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.USER_NOTIFICATION_TOPIC}" ] ] }
+  sendEmail:
+    handler: functions/notifications.sendEmail
+    events:
+      - sns:
+          arn: { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.USER_NOTIFICATION_TOPIC}" ] ] }
+          topicName: ${self:provider.environment.USER_NOTIFICATION_TOPIC}
 
 resources:
   - ${file(resources/dynamo-db.yml)}

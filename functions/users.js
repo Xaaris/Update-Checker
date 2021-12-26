@@ -61,5 +61,5 @@ module.exports.getUser = async (userId) => {
     }
 
     const users = await dynamoDb.get(params).promise();
-    return users.Items
+    return users.Item
 }
