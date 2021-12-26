@@ -74,6 +74,11 @@ sls remove
 If you have multiple AWS profiles on your machine, you can use a specific one by appending `--aws-profile <profile_name>` to any of the above commands.
 
 
+# SES (Amazon Simple Email Service)
+SES is used to send the emails. 
+As of now, a sandbox account is used which sends emails via GMail from updatecheckermailer@gmail.com. 
+The sand-boxing has the downside that both sender and receiver email addresses need to be verified before an email can be sent.
+This can be done via the SES console.
 
 ## CloudFront
 
