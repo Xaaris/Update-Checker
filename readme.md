@@ -21,7 +21,7 @@ Authentication and authorization is handled by Auth0
 * we added an application called **Product Checker**
   * the application was configured for SPA (option when generating)
   * RBAC was enabled (role based access control)
-  * allowed the http://localhost:8080 and the cloudfront URL (https://d339a6qsn4yfj0.cloudfront.net) to the following configurations
+  * allowed the http://localhost:8080 and the cloudfront URL (https://d1u1ej0bxdutuj.cloudfront.net) to the following configurations
     * Allowed Callback URLs
     * Allowed Logout URLs
     * Allowed Web Origins
@@ -34,7 +34,7 @@ Authentication and authorization is handled by Auth0
 
 ### Frontend 
 
-Both projects use a SPA frontend with Auth0 specific authentication. Even though OpenID Connect and OAuth2 are used under the hood, a specific library by Auth0 was used to make use of both protocols.
+The project uses an SPA frontend with Auth0 specific authentication. Even though OpenID Connect and OAuth2 are used under the hood, a specific library by Auth0 was used to make use of both protocols.
 
 The library used here is called [auth0-spa-js](https://github.com/auth0/auth0-spa-js).
 
@@ -84,7 +84,7 @@ This can be done via the SES console.
 
 Due to lack of time (HW too short) CloudFront was set up via the AWS console.
 
-To document the setup we used [former2 cli](https://github.com/iann0036/former2/blob/master/cli/README.md) to export the cloudformation representation to the file [cloudFront.yaml](cloudFront.yaml).
+To document the setup we used [former2 cli](https://github.com/iann0036/former2/blob/master/cli/README.md) to export the cloudformation representation to the file [cloudFront.yml](resources/cloudFront.yml).
 
 ```bash
 former2 generate --services "CloudFront" --output-cloudformation "cloudFront.yaml" 
@@ -98,3 +98,17 @@ Important for the setup was to create a custom cache policy for the api gateway 
 * disable caching
 * allow the `Authorization` header to be forwarded (this means the header is considered part of the caching key)
 * the same has to happen for the query parameters (here we just said that all query parameters should be considered as part of the caching key)
+
+Update:
+Cloudfront is now set up via serverless framework as well. 
+However, I was not able to set up the cache policy for the api calls this way. 
+This cache policy is therefore created manually through the aws UI.
+It is called `NoCachePlusAuthorization` and configured as follows:
+- Minimum TTL = 0
+- Maximum TTL = 1
+- Default TTL = 0
+- Allowed headers: Authorization
+- Allowed query strings: All
+- Gzip enabled
+- Brotli enabled
+The id (in this case `c3e44aee-b2c4-4a53-a3f1-b5a5732a36e8`) needs to be referenced in the cloudFront.yml file.

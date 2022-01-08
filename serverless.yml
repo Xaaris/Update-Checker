@@ -57,7 +57,6 @@ provider:
           Resource:
             - { "Fn::Join": [ ":", [ "arn:aws:ses:${aws:region}", { "Ref": "AWS::AccountId" }, "*" ] ] }
 
-
 package:
   patterns:
     - '!frontend/**'
@@ -130,3 +129,4 @@ resources:
   - ${file(resources/dynamo-db.yml)}
   - ${file(resources/sns.yml)}
   - ${file(resources/s3.yml)}
+  - ${file(resources/cloudFront.yml)}
