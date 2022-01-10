@@ -109,6 +109,12 @@ functions:
       - schedule: rate(1 day)
     environment:
       SNS_PRODUCT_UPDATE_TOPIC_ARN: { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.PRODUCT_UPDATE_TOPIC}" ] ] }
+  refreshFritzBox:
+    handler: functions/providerFritzBox.refresh
+    events:
+      - schedule: rate(1 day)
+    environment:
+      SNS_PRODUCT_UPDATE_TOPIC_ARN: { "Fn::Join": [ ":", [ "arn:aws:sns:${self:provider.region}", { "Ref": "AWS::AccountId" }, "${self:provider.environment.PRODUCT_UPDATE_TOPIC}" ] ] }
   # Notifications and emails
   sendUserNotifications:
     handler: functions/notifications.sendUserNotifications
