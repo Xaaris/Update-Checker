@@ -9,7 +9,7 @@ const SNS = new AWS.SNS({region: AWS_DEPLOY_REGION})
 
 module.exports.refresh = async (event, context) => {
 
-    const [localProduct] = await getProductsByProvider('ikea');
+    const [localProduct] = await getProductsByProvider('IKEA');
     console.log(localProduct)
     const latestVersion = await getLatestIkeaTradfriGatewayVersion()
     console.log(latestVersion)

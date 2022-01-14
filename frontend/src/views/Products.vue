@@ -33,7 +33,7 @@ export default {
     }
   },
   created() {
-    this.products = this.$route.meta.products;
+    this.products = this.$route.meta.products.sort((a, b) => a.id - b.id)
     this.getSubscriptions()
   },
   methods: {
